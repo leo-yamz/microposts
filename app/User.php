@@ -72,7 +72,8 @@ class User extends Authenticatable
         }
     }
     
-    public function unfollow($userId) {
+    public function unfollow($userId) 
+    {
         $exist = $this->is_following($userId);
         $its_me = $this->id == $userId;
         
@@ -84,7 +85,17 @@ class User extends Authenticatable
         }
     }
     
-    public function is_following($userId) {
+    public function is_following($userId) 
+    {
         return $this->followings()->where('follow_id', $userId)->exists();
+    }
+    
+    public function feed_microposts() 
+    {
+        $userIds = $this->followings()->pluck('users.id')->toArray();
+        
+        $userIds[] = $this->id;
+        
+        return Micropost::whereIn('user_id', $userIds);
     }
 }
